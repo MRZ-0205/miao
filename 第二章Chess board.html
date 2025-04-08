@@ -1,0 +1,34 @@
+<script>
+  let width = +prompt('width:')
+  let height = +prompt('height:')
+  let a = ' '
+  let b = '#'
+  let line1 = ''
+  let line2 = ''
+  let output = ''  
+
+  for (let i = 0; i < width; i++) { 
+    if (i % 2 == 0) {
+      line1 += a
+    } else {
+    line1 += b
+    }
+  }
+  for (let i = 0; i < width; i++) { 
+    if (i % 2 == 0) {
+      line2 += b
+    } else {
+    line2 += a
+    }
+  }  
+
+  for (let i = 0; i < height; i++) {
+    if (i % 2 == 0) {
+      output += line1 + '\n'
+    } else {
+      output += line2 + '\n'
+    }
+  }
+       
+  console.log(output)
+</script>

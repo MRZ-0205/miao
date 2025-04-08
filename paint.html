@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<!-- saved from url=(0053)https://class.damiaoedu.com:44314/codes/js/paint.html -->
+<html lang="en"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  
+  <title>画图</title>
+  <style>
+    canvas {
+      border: 2px solid #f0f;
+      display: block;
+      margin: auto;
+    }
+  </style>
+</head>
+<body>
+  <canvas width="1000" height="1000" style="image-rendering: pixelated;"></canvas>
+
+<script>
+  var canvas = document.querySelector('canvas')
+  canvas.style.imageRendering = 'pixelated' //放大时的插帧方式：不插帧，直接放大像素
+  var ctx = canvas.getContext('2d')
+
+  function dot(x, y, color = 'black') {
+    x = Math.round(x)
+    y = Math.round(y)
+    ctx.fillStyle = color
+    ctx.fillRect(x, y, 1, 1)
+  }
+  /**
+   * 你的任务：通过调用dot函数，实现：
+   * 需要注意，dot函数不能接收浮点数，如果参数为浮点数，会被转换为整数后绘制
+      * 在 坐标 (42, 42) 画出一个点
+      * 画一条水平实线，粗细为一个像素
+      * 画一条垂直实线，粗细为一个像素
+      * 画一条一个实点一个空点的虚线
+      * 画一条两个实点两个空点的虚线
+      * 画一条三个实点两个空点的虚线
+      * 画一条45度的斜线
+      * 画一条30度的斜线（与x轴的夹角呈30度）
+      * 画一条60度的斜线（与x轴的夹角呈60度）
+      * 画一条跨越画布左上角和右下角的对角线
+      * 画一个空心矩形
+      * 画一个实心矩形
+      * 画两个空心的圆，圆心在画布中心：
+        * 一个半径为50像素
+        * 一个半径为200像素
+      * 画一个实心的圆，半径至少为100像素
+      * 画一个【大小位置都合适】的sin(x)的图像
+      * 画一个贝塞尔曲线（二阶或三阶均可，二阶由三个点确定，三阶由四个点确定）
+
+      * 画出rgb色彩空间的某一面（尺寸要大于100x100）
+      * 如果做出上一题后，尝试将其每个点的坐标乘以一个矩阵（如(2,0,0,2)或(1,0.27得到新的位置，即绘制出被线性变换后的色彩空间某一面
+        可以考虑如下几种矩阵：
+           2 0
+           0 2
+           ------
+           1  0.27
+           0  1
+           ------
+           0.5    0.87
+           -0.87  0.5
+
+   */
+</script>
+<script>
+  // 不可更改上面的代码
+  // 你的代码写在这里
+  let width = 1000
+  let height = 1000
+  
+  dot(42, 42, color = 'black')
+  //   在 坐标 (42, 42) 画出一个点
+  for (let y = 0; y < height; y++ ) {
+    dot(23, y, color = 'black')
+  }
+  // 画一条水平实线，粗细为一个像素
+  for (let x = 0; x < width; x++) {
+    dot(x, 456, color = 'black')
+  }
+  // 画一条垂直实线，粗细为一个像素
+  for (let x = 0; x < width; x += 2) {
+    dot(x, 956, color = 'black')
+  }
+  // 画一条一个实点一个空点的虚线
+  for (let y = 0; y < height; y++) {
+    if (y % 4 < 2) {
+      dot(544, y, color = 'black')
+    }
+  }
+  // 画一条两个实点两个空点的虚线
+  for (let y = 0; y < height; y++) {
+    if (y % 5 < 3) {
+      dot(632, y, color = 'black')
+    }
+  }
+  // 画一条三个实点两个空点的虚线
+  for (let x = 0; x < width; x++) {
+    let y = Math.tan(45 * Math.PI / 180) * x
+    dot(x, y, color = 'black')
+  }
+  // 画一条45度的斜线
+  {
+    let a = 30
+    for (let x = 0; x < width; x++) {
+      let y = Math.tan(a * Math.PI / 180) * x
+      dot(x, y, color = 'black')
+    }
+    for (let y = 0; y < height; y++) {
+      let x = y / Math.tan(a * Math.PI / 180)
+      dot(x, y, color = 'black')
+    }
+  }
+  // 画一条30度的斜线（与x轴的夹角呈30度）
+  {
+    let a = 60
+    for (let x = 0; x < width; x++) {
+      let y = Math.tan(a * Math.PI / 180) * x
+      dot(x, y, color = 'black')
+    }
+    for (let y = 0; y < height; y++) {
+      let x = y / Math.tan(a * Math.PI / 180)
+      dot(x, y, color = 'black')
+    }
+  }
+  // 画一条60度的斜线（与x轴的夹角呈60度）
+  {
+    let a = 77
+    for (let x = 0; x < width; x++) {
+      let y = Math.tan(a * Math.PI / 180) * x
+      dot(x, y, color = 'black')
+    }
+    for (let y = 0; y < height; y++) {
+      let x = y / Math.tan(a * Math.PI / 180)
+      dot(x, y, color = 'black')
+    }
+  }
+  // 画一条跨越画布左上角和右下角的对角线
+  {
+    let x1 = 200
+    let x2 = 500
+    let y1 = 300
+    let y2 = 700
+    for (let x = 0; x < width; x++) {
+      for (let y = 0; y < height; y++) {
+        if (((x == x1 || x == x2) && y >= y1 && y <= y2) || (x > x1 && x < x2 && (y == y1 || y == y2))) {
+          dot(x, y, color = 'black')
+        }
+      }
+    }
+  }
+  {
+    let x1 = 200
+    let x2 = 500
+    let y1 = 300
+    let y2 = 700
+    for (let x = 0; x < width; x++) { // 分别画两组对边
+      if (x >= x1 && x <= x2) {
+        dot(x, y1, color = 'black')     
+        dot(x, y2, color = 'black') 
+      }
+    }
+    for (let y = 0; y < height; y++) {
+      if (y >= y1 && y <= y2) {
+        dot(x1, y, color = 'black')     
+        dot(x2, y, color = 'black') 
+      }
+    }
+  }
+  // 画一个空心矩形
+  {
+    let x1 = 20
+    let x2 = 50
+    let y1 = 30
+    let y2 = 70
+    for (let x = 0; x < width; x++) {
+      for (let y = 0; y < height; y++) {
+        if (x >= x1 && x <= x2 && y >= y1 && y <= y2) {
+          dot(x, y, color = 'black')
+        }
+      }
+    }
+  }
+  // 画一个实心矩形
+  {
+    let r = 50
+    for (let x = 0; x < width; x++) {
+      if (x >= width / 2 - r && x <= width / 2 + r) {
+        dot(x, height / 2 + (r ** 2 - (x - width / 2) ** 2) ** 0.5, color = 'black')
+        dot(x, height / 2 - (r ** 2 - (x - width / 2) ** 2) ** 0.5, color = 'black')
+      }
+    }
+    for (let y = 0; y < height; y++) {
+      if (y >= height / 2 - r && y <= height / 2 + r) {
+        dot(width / 2 + (r ** 2 - (y - height / 2) ** 2) ** 0.5, y, color = 'black')
+        dot(width / 2 - (r ** 2 - (y - height / 2) ** 2) ** 0.5, y, color = 'black')
+      }
+    }
+  }
+  // 画两个空心的圆，圆心在画布中心：
+  // * 一个半径为50像素
+  {
+    let r = 200
+    for (let x = 0; x < width; x++) {
+      if (x >= width / 2 - r && x <= width / 2 + r) {
+        dot(x, height / 2 + (r ** 2 - (x - width / 2) ** 2) ** 0.5, color = 'black')
+        dot(x, height / 2 - (r ** 2 - (x - width / 2) ** 2) ** 0.5, color = 'black')
+      }
+    }
+    for (let y = 0; y < height; y++) {
+      if (y >= height / 2 - r && y <= height / 2 + r) {
+        dot(width / 2 + (r ** 2 - (y - height / 2) ** 2) ** 0.5, y, color = 'black')
+        dot(width / 2 - (r ** 2 - (y - height / 2) ** 2) ** 0.5, y, color = 'black')
+      }
+    }
+  }
+  // * 一个半径为200像素
+  {
+    let r = 111
+    let x0 = 700
+    let y0 = 600
+    for (let x = 0; x < width; x++) {
+      for (let y = 0; y < height; y++) {
+        if (((x - x0) ** 2 + (y - y0) ** 2) ** 0.5 <= r) {
+          dot(x, y, color = 'black')
+        }  
+      }
+    }
+  }
+  // 画一个实心的圆，半径至少为100像素
+  {
+    for (let x = 0; x < width; x++) {
+      let y = Math.sin(x) + 200
+      dot(x, y, color = 'black')
+    } 
+  }
+  // 画一个【大小位置都合适】的sin(x)的图像
+  {
+    let x0 = 436
+    let y0 = 856
+    let x1 = 12
+    let y1 = 457
+    let x2 = 890
+    let y2 = 334
+    let x3 = 129
+    let y3 = 666
+    for (let t = 0; t < 1; t += 0.001) { //t从0到1
+      let x = (1 - t) ** 3 * x0 + 3 * t * (1 - t) ** 2 * x1 + 3 * t ** 2 * (1 - t) * x2 + t ** 3 * x3
+      let y = (1 - t) ** 3 * y0 + 3 * t * (1 - t) ** 2 * y1 + 3 * t ** 2 * (1 - t) * y2 + t ** 3 * y3
+      dot(x, y, color = 'black') 
+    }
+  }
+  // 画一个贝塞尔曲线（二阶或三阶均可，二阶由三个点确定，三阶由四个点确定）
+  {
+    let x0 = 400
+    let y0 = 400
+    let a = 128
+    let blue = 32
+    for (let x = 0; x < width; x++) {
+      for (let y = 0; y < height; y++) {
+        if (x >= x0 && x <= x0 + a && y >= y0 && y <= y0 + a) {
+          let color = `rgb(${x-x0},${y-y0},${blue})`
+          dot(x, y, color)
+
+          let xn = x * 1 + y * 0
+          let yn = x * 0.27 + y * 1
+          dot(xn, yn, color)
+        }
+      }
+    }
+  }
+  // 1    0.27
+  // 0  1
+</script>
+
+</body></html>
