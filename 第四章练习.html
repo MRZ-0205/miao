@@ -1,0 +1,75 @@
+<script type = 'xxx' id = 'The sum of a range' >
+  function range(start, end) {
+    const res = []
+    for (let i = start; i <= end; i++) {
+      res.push(i)
+    }
+    return res
+  }
+</script>
+
+<script type = 'xxx' id = 'The sum of a range-2'>
+  function range(start, end) {
+    const n = end - start + 1
+    const res = []
+    for (let i = 0; i < n; i++) {
+      res.push(start + i)
+    }
+    return res
+  }
+</script>
+
+<script type = 'xxx' id = 'The sum of a range2'>
+  function sum(array) {
+    const n = array.length
+    let sum = 0
+    for (let i = 0; i < n; i++) {
+      sum += array[i]
+    }
+    return sum
+  }
+</script>
+
+<script type = 'xxx' id = 'The sum of a range3'>
+  function range(start, end, step) {
+    const res = []
+    for (let i = start; start < end ? i <= end : i >= end; i += step) { // 条件想着简单，只是写的长。
+      res.push(i)
+    }
+    return res
+  }
+</script>
+
+<script type = 'xxx' id = 'The sum of a range3-2'>
+  function range(start, end, step) {
+    const n = Math.floor((end - start) / step + 1) // 长度想着更麻烦。
+    const res = []
+    for (let i = 0; i < n; i++) {
+      res.push(start + i * step)
+    }
+    return res
+  }
+</script>
+
+<script type = 'xxx' id = 'Reverse an array'>
+  function reverseArray(array) {
+    const n = array.length
+    const res = []
+    for (let i = n - 1; i > -1; i--) {
+      res.push(array[i])
+    }
+    return res
+  }
+</script>
+
+<script type = '' id = 'Reverse an array in place'>
+  function reverseArrayInPlace(array) {
+    const n = array.length
+    for (let i = 0; i < n / 2; i++) {
+      let temp = array[i] // 解构赋值[array[i], array[n - 1 - i]] = [array[n - 1 - i], array[i]]
+      array[i] = array[n - 1 - i]
+      array[n - 1 - i] = temp
+    }
+    return array
+  }
+</script>
