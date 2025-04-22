@@ -76,7 +76,7 @@
       return node
     }
     let p = head
-    while (p.next) { // 结束循环时p指向最后一个节点。
+    while (p.next) { // 结束循环时p指向最后一个结点。
       p = p.next
     }
     p.next = node
@@ -99,7 +99,7 @@
       return node
     }
     let p = head
-    for (let i = 0; i < idx - 1 && p.next; ++i) { // 索引>0，结束循环时，p指向目标前一个节点或者最后一个节点。
+    for (let i = 0; i < idx - 1 && p.next; ++i) { // 索引>0，结束循环时，p指向目标前一个结点或者最后一个结点。
       p = p.next
     }
     node.next = p.next
@@ -146,7 +146,7 @@
       return head.next
     }
     let p = head
-    for (let i = 0; i < idx - 1 && p.next.next; ++i) { // 索引>0，结束循环时，p指向目标前一个节点或者倒数第二个节点。
+    for (let i = 0; i < idx - 1 && p.next.next; ++i) { // 索引>0，结束循环时，p指向目标前一个结点或者倒数第二个结点。
       p = p.next
     }
     p.next = p.next.next
