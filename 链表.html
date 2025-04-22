@@ -1,0 +1,203 @@
+<script>
+
+  function arrayToList(array) { // 两次遍历。
+    const n = array.length
+    const nodes = []
+    for (let i = 0; i < n; ++i) {
+      const node = {
+        val: array[i],
+        next: null,
+      }
+      nodes.push(node)
+    }
+    for (let i = 0; i < n - 1; ++i) {
+      nodes[i].next = nodes[i + 1]
+    }
+    return nodes[0] ? nodes[0] : null
+  }
+
+  function arrayToList2(array) { // 指针。
+    const r = {val: 0, next: null}
+    let p = r
+    for (let i = 0; i < array.length; ++i) {
+      const node = {
+        val: array[i],
+        next: null,
+      }
+      p.next = node
+      p = node
+    }
+    return r.next
+  }
+
+  function arrayToList3(array) { // 递归。
+    if (array.length === 0) {
+      return null
+    }
+    const head = {
+      val: array[0],
+      next: null,
+    }
+    let restArray = array.slice(1)
+    head.next = arrayToList3(restArray)
+    return head
+  }
+
+  function listToArray(head) {
+    const array = []
+    while (head) { // head !== null
+      array.push(head.val)
+      head = head.next
+    }
+    return array
+  }
+
+  function listToArray2(head) { // 递归。
+    if (head === null) {
+      return []
+    }
+    return [head.val].concat(listToArray2(head.next))
+  }
+
+  function prepend(val, list) { // 往前面增加。
+    const node = {
+      val: val,
+      next: list,
+    }
+    return node
+  }
+
+  function append(val, head) { // 往后面增加。
+    const node = {
+      val: val,
+      next: null,
+    }
+    if(!head) {
+      return node
+    }
+    let p = head
+    while (p.next) { // 结束循环时p指向最后一个节点。
+      p = p.next
+    }
+    p.next = node
+    return head
+  }
+
+  function insert(val, head, idx) { // 在索引处插入值。
+    const node = {
+      val: val,
+      next: null,
+    }
+    if (idx < 0) {
+      idx = 0
+    }
+    if(!head) {
+      return node
+    }
+    if (idx === 0) {
+      node.next = head
+      return node
+    }
+    let p = head
+    for (let i = 0; i < idx - 1 && p.next; ++i) { // 索引>0，结束循环时，p指向目标前一个节点或者最后一个节点。
+      p = p.next
+    }
+    node.next = p.next
+    p.next = node
+    return head
+  }
+
+  function insert2(val, head, idx) { // 递归
+    const node = {
+      val: val,
+      next: null,
+    }
+    if (idx < 0) { // 往前插。
+      idx = 0
+    }
+    if(!head) {
+      return node
+    }
+    if (idx === 0) {
+      node.next = head
+      return node
+    }
+    if (!head.next && idx > 1) { // 往后插。
+      head.next = node
+      return head
+    }
+    if (idx === 1 ) { // 往中间插。
+      node.next = head.next
+      head.next = node
+      return head
+    }
+    head.next = insert2(val, head.next, idx - 1)
+    return head
+  }
+
+  function remove(head, idx) { // 在索引处删除值。
+    if (idx < 0) {
+      idx = 0
+    }
+    if (!head) {
+      return null
+    }
+    if (idx === 0) {
+      return head.next
+    }
+    let p = head
+    for (let i = 0; i < idx - 1 && p.next.next; ++i) { // 索引>0，结束循环时，p指向目标前一个节点或者倒数第二个节点。
+      p = p.next
+    }
+    p.next = p.next.next
+    return head
+  }
+
+  function remove2(head, idx) { // 递归
+    if (idx < 0) {
+      idx = 0
+    }
+    if(!head) {
+      return null
+    }
+    if (idx === 0) {
+      return head.next
+    }
+    if (!head.next.next && idx > 1) {
+      head.next = null
+      return head
+    }
+    if (idx === 1 ) {
+      head.next = head.next.next
+      return head
+    }
+    head.next = remove2(head.next, idx - 1)
+    return head
+  }
+
+  function nth(head, idx) {  // 指针。
+    if (idx < 0) { // 索引为负。
+      return undefined
+    }
+    let p = head
+    for (i = 0; i < idx; ++i) {
+      if (p) { // 索引比链表长度大，会试图读null的next属性，报错。
+        p = p.next
+      } else {
+        return undefined
+      }
+    }
+    return p ? p.val : undefined // 索引恰比链表长度大1，即最终p = null。
+  }
+
+  function nth2(head, idx) { // 递归。
+    if (idx < 0 || !head) {
+      return undefined
+    }
+    if (idx === 0) {
+      return head.val
+    }
+    return nth2(head.next, idx - 1)
+  }
+
+</script>
