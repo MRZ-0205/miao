@@ -1,0 +1,272 @@
+<script>
+  // 升序。
+  /**
+   * 排序算法的稳定性：排序前后相同元素的相对位置能否保持不变
+   * 如果能，则该排序算法是稳定的，反之，则是不稳定的。
+   * 
+   * 冒泡排序：稳定
+   * 选择排序：不稳定
+   * 插入排序：稳定
+   * 快速排序：
+   *   原地版：不稳定
+   *   使用额外数组版：稳定
+   * 归并排序：稳定
+   * 
+   * 排序稳定性的应用：
+   *   对成绩单进行排序：
+   *     总分相同按语文排
+   *     语文相同按数学排
+   *     数学相同按英语排
+   * 整个过程只需使用稳定的排序算法，
+   * 先对英语进行排序
+   * 然后再对数学进行排序
+   * 然后再对语文进行排序
+   * 然后再对总分进行排序
+   * 即可
+   */
+
+   /**
+    * 
+    * 快速排序的退化问题
+    *   当数组中有大量相同的元素时，快排的时间复杂度会退化到n ** 2
+    *   可能会爆栈，因为partition操作可能会极其不均衡的将元素分成两部分
+    * 
+    * 快排的另一个应用：
+    *   找出数组中第n大的元素
+    */
+
+  // 生成长度为len的随机整数数组。
+  // 数都小于len。
+  function randomArray(len) {
+    const array = new Array(len).fill(0)
+    for (let i = 0; i < len; ++i) {
+      array[i] = Math.floor(Math.random() * len)
+    }
+    return array
+  }
+
+  // 用来判断一个数组是否是升序的。
+  function isSorted(array) {
+    const res = {
+      isSorted: true,
+      array: array,
+    }
+    for (let i = 1; i < array.length; ++i) {
+      if (array[i] < array[i - 1]) {
+        res.isSorted = false
+      }
+    }
+    return res
+  }
+
+  function swap(array, i, j) {
+    let temp = array[i] // [array[i] = array[j]] = [array[j] = array[i]]
+    array[i] = array[j]
+    array[j] = temp
+    return array
+  }
+
+  // 交换次数多，重复交换。
+  function sort1(array) {
+    for (let i = 1; i < array.length; ++i) {
+      for (let j = 0; j < array.length; ++j) {
+        if (array[i] < array[j]) {
+          swap(array, i, j)
+        }
+      }
+    /** 仍然交换次数多。
+     *for (let j = i - 1; j >= 0; --j) {
+     *  if (array[j + 1] < array[j]) {  // 比较 j+1 和 j
+     *    swap(array, j, j + 1);  // 交换
+     *  } else {
+     *    break;  // 提前终止
+     *  }
+     *} 
+    */      
+    }
+    return array
+  }
+
+  /**
+   * 插入排序：
+   * 前部分有序，后部分无序。
+   * 每次外层循环先取无序部分第一个值。
+   * 每次内层循环将这个值依次往前比较，找到正确位置，之间的元素依次往后移。
+   * 将这个值插入正确位置，
+   */
+  function insertSort(array) {
+    for (let i = 1; i < array.length; ++i) {
+      const curr = array[i]
+      let j = i - 1
+      while (j >= 0 && array[j] > curr) {
+        array[j + 1] = array[j]
+        --j
+      }
+      array[j + 1] = curr
+    }
+    return array
+  }
+
+  /**
+   * 选择排序：
+   * 前部分有序，后部分无序。
+   * 每次外层循环先预设无序部分第一个元素为最小值。
+   * 每次内层循环将最小值与无序部分其他元素依次比较，找到无序部分最小值的索引。
+   * 最小的元素和无序部分第一个元素交换位置。
+   */
+  function selectSort(array) {
+    for (let i = 0; i < array.length - 1; ++i) {
+      let minIdx = i
+      for (let j = i + 1; j < array.length; ++j) {
+        if (array[j] < array[minIdx]) {
+          minIdx = j
+        }
+      }
+      swap(array, i, minIdx)
+    }
+    return array
+  }
+
+  /**
+   * 冒泡排序。
+   * 前部分无序，后部分有序。
+   * 外层循环控制无序部分的末尾的位置。控制比较、移动的范围
+   * 每次内层循环依次比较、移动无序部分相邻的两个元素，将最大的元素移动到无序部分的末尾。
+   * 通过标记，当一次内层循环无交换时，结束排序。
+   */
+  function bubbleSort(array) {
+    for ( let i = array.length - 1; i >= 0; --i) {
+      let swapped = false
+      for (let j = 0; j < i; ++j) { // 最大的j + 1 < array.length, j < array.length - 1, 为i的起始值。
+        if (array[j] > array[j + 1]) {
+          swap(array, j, j + 1)
+          swapped = true
+        }
+      }
+      if (swapped === false) {
+        break
+      }
+    }
+    return array
+  }
+
+  /**
+   * 快速排序是一种高效的分治排序算法，
+   * 通过一趟排序将待排序列分割成独立的两部分，其中一部分的所有元素均比另一部分的元素小，
+   * 然后递归地对这两部分进行排序。
+   */
+  function quickSort1(array) {
+    if (array.length <= 1) { // 基准条件。
+      return array.slice() // 返回新数组，保持纯函数特性。
+    }
+
+    const pivot = array[Math.floor(Math.random() * array.length)] // 随机选择 pivot 可以减少最坏情况发生的概率。
+    let large = []
+    let small = []
+    const equal = []
+
+    for (let i = 0; i < array.length; ++i) {
+      if (array[i] > pivot) {
+        large.push(array[i])
+      } else if (array[i] < pivot) {
+        small.push(array[i])
+      } else {
+        equal.push(array[i])
+      }
+    }
+    
+    large = quickSort1(large) // return [...quickSort1(small), ...equal, ...quickSort1(large)]
+    small = quickSort1(small) // 此时large、small的声明可以用const。
+    
+    return small.concat(equal, large)
+  }
+
+  // 原地排序，Lomuto分区。
+  // 待排数组全部相同时会爆栈。
+  function quickSort2(array, left = 0, right = array.length - 1) {
+    if (left >= right) {
+      return array
+    } 
+    const pivotIdx = left + Math.floor(Math.random() * (right - left + 1))
+    const pivot = array[pivotIdx]
+    swap(array, pivotIdx, right) // 解构赋值前句末加分号，折腾了我3个小时。
+    let i = left
+    // 小于i的位置的元素是那些<哨兵元素的元素们。
+    // 大于等于i的位置的元素是那些>=哨兵元素的元素们。
+    for (let j = left; j < right; ++j) { // 因为此时array[right]是pivot。
+      if (array[j] < pivot) {
+        swap(array, i, j)
+        ++i
+      }
+    }
+    swap(array, i, right)
+    quickSort2(array, left, i - 1) // 能保证array[i] === pivot。
+    quickSort2(array, i + 1, right)
+    return array
+  }
+
+  function quickSort3(array, left = 0, right = array.length - 1) { // 原地排序，Hoare分区。
+    if (left >= right) {
+        return array
+    }
+    const pIdx = partitionHoare(array, left, right)
+    quickSort3(array, left, pIdx) // 不能保证array[i] === pivot。
+    quickSort3(array, pIdx + 1, right)
+    return array
+  }
+
+  // 小于i的位置的元素是那些<=哨兵元素的元素们。
+  // 大于j的位置的元素是那些>=哨兵元素的元素们。
+  function partitionHoare(array, left, right) {
+    const pIdx = left + Math.floor(Math.random() * (right - left + 1))
+    const p = array[pIdx];
+    [array[pIdx], array[right]] = [array[right], array[pIdx]]
+    let i = left - 1
+    let j = right + 1
+    while (true) {
+        do {i++} while (array[i] < p)
+        do {j--} while (array[j] > p)
+        if (i >= j) {
+            return j
+        }
+        [array[i], array[j]] = [array[j], array[i]]
+    }
+  }
+
+  /**
+   * 归并排序是一种高效的分治排序算法，
+   * 将数组分成两半，
+   * 递归地对每一半继续分解，直到子数组长度为 1（此时已有序），
+   * 然后将两个有序的子数组合并成一个有序的数组。
+   * 无法原地排序。
+   * 是链表的首选排序算法，因为无需随机访问。
+   */
+  function mergeSort(array) {
+    if (array.length < 2) {
+      return array
+    }
+    const midIdx = Math.floor(array.length / 2)
+    const left = array.slice(0, midIdx)
+    const right = array.slice(midIdx)
+    mergeSort(left)
+    mergeSort(right)
+    let i = 0
+    let j = 0
+    let k = 0
+    while (i < left.length && j < right.length) {
+      if (left[i] <= right[j]) { // <=稳定。
+        array[k++] = left[i++]
+      } else {
+        array[k++] = right[j++]
+      }
+    }
+    while (i < left.length) {
+      array[k++] = left[i++]
+    }
+    while (j < right.length) {
+      array[k++] = right[j++]
+    }
+    return array
+  }
+
+</script>
