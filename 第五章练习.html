@@ -1,0 +1,138 @@
+<script type = 'xxx' id = 'Flattening'>
+
+  function flatten(arrays) {
+    let res = []
+    for (let array of arrays) {
+      res = res.concat(array)
+    }
+    return res
+  }
+  
+  function flatten2(arrays) {
+    return arrays.reduce((a, b) => a.concat(b), [])
+  }
+
+  function flatten3(arrays) {
+    return arrays.reduce((a, b) => {
+      a.push(...b) // array必须是数组。
+      return a // push返回新数组的长度。
+    }, [])
+  }
+
+  function flattenDeep2(array) {
+    let res = []
+    for(let i = 0; i < array.length; i++) {
+      if (typeof array[i] === "number") {
+        res = res.concat(array[i])
+      } else {
+        res = res.concat(...flattenDeep2(array[i]))
+      }
+    }
+    return res
+  }
+
+  function flattenDeep3(array) {
+    return array.reduce((a,b) => {
+      if (typeof b === "number") {
+        return a.concat(b)
+      } else {
+        return a.concat(...flattenDeep3(b))
+      }
+    }, [])
+  }
+
+  const flattenDeep4 = arr =>
+    arr.reduce((acc, val) => 
+      Array.isArray(val)
+      ? [...acc, ...flattenDeep4(val)] // acc.concat(...flattenDeep4(val))
+      : [...acc, val]                  // acc.concat(val)
+    , [])
+
+  function flattenDeep(array) {
+    var result = []
+    for (var i = 0; i < array.length; i++) {
+        if (Array.isArray(array[i])) {
+          result = result.concat(...flattenDeep(array[i]))
+        } else {
+          result = result.concat(array[i])
+        }
+    }
+    return result
+}
+
+</script>
+
+<script type = 'xxx' id = 'Mother-child age difference'>
+  
+  const byName = {}
+  ancestry.forEach(it => byName[it.name] = it)
+  ancestry
+    .filter(it =>
+      byName[it.mother])
+    .map(it =>
+      it.born - byName[it.mother].born)
+    .reduce((avg, it, i) =>
+    (avg * i + it) / (i + 1), 0)
+
+</script>
+
+<script type = '' id = 'Historical life expectancy'>
+
+  function mapValues(obj, transformFn) {
+    const res = {}
+    for (let key in obj) {
+      res[key] = transformFn(obj[key], key)
+    }
+    return res
+  } 
+  mapValues(Object.groupBy(ancestry, it => Math.ceil(it.death / 100)), persons => persons.map(it => it.died - it.born)).reduce((a, b) => a + b) / persons.length
+
+</script>
+
+<script type = 'xxx' id = 'Every and then some'>
+
+  const every = (array, test) =>
+    array.reduce((acc, val) =>
+      acc && test(val)
+      , true)
+
+  const some = (array, test) =>
+    array.reduce((acc, val) =>
+      acc || test(val)
+      , false)
+
+  // 可以提前终止。
+  function every2(array, test) {
+    for (let item of array) {
+      if (!test(item)) {
+        return false
+      }
+    }
+    return true
+  }
+
+  // 可以提前终止。
+  function some2(array, test) {
+    for (let item of array) {
+      if (test(item)) {
+        return true
+      }
+    }
+    return false
+  }
+
+  /**
+   * 德摩根定律：
+   * A && B 等价于 !((!A) || (!B)) 全部满足 = 不存在任何一个不满足
+   * !((!A) && (!B)) 等价于 A || B 存在满足 = 并非全部都不满足
+   */
+
+  function some3(array, test) {
+    return !every2(array, (...args) => !test(...args))
+  }
+
+  function every3(array, test) {
+    return !some2(array, (...args) => !test(...args))
+  }
+
+</script>

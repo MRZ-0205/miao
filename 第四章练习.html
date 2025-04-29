@@ -1,4 +1,5 @@
 <script type = 'xxx' id = 'The sum of a range' >
+
   function range(start, end) {
     const res = []
     for (let i = start; i <= end; i++) {
@@ -6,9 +7,11 @@
     }
     return res
   }
+
 </script>
 
 <script type = 'xxx' id = 'The sum of a range-2'>
+
   function range(start, end) {
     const n = end - start + 1
     const res = []
@@ -17,9 +20,11 @@
     }
     return res
   }
+
 </script>
 
 <script type = 'xxx' id = 'The sum of a range2'>
+
   function sum(array) {
     const n = array.length
     let sum = 0
@@ -28,9 +33,11 @@
     }
     return sum
   }
+
 </script>
 
 <script type = 'xxx' id = 'The sum of a range3'>
+
   function range(start, end, step) {
     const res = []
     for (let i = start; start < end ? i <= end : i >= end; i += step) { // 条件想着简单，只是写的长。
@@ -38,9 +45,11 @@
     }
     return res
   }
+
 </script>
 
 <script type = 'xxx' id = 'The sum of a range3-2'>
+
   function range(start, end, step) {
     const n = Math.floor((end - start) / step + 1) // 长度想着更麻烦。
     const res = []
@@ -49,9 +58,11 @@
     }
     return res
   }
+
 </script>
 
 <script type = 'xxx' id = 'Reverse an array'>
+
   function reverseArray(array) {
     const n = array.length
     const res = []
@@ -60,9 +71,11 @@
     }
     return res
   }
+
 </script>
 
-<script type = '' id = 'Reverse an array in place'>
+<script type = 'xxx' id = 'Reverse an array in place'>
+
   function reverseArrayInPlace(array) {
     const n = array.length
     for (let i = 0; i < n / 2; i++) {
@@ -72,4 +85,35 @@
     }
     return array
   }
+
+</script>
+
+<script type = '' id = 'Deep comparison'>
+
+  function deepEqual(x, y) {
+    // 数组可以===
+    if (x && y && typeof x === 'object' && typeof y === 'object' && !Array.isArray(x) && !Array.isArray(y)) {
+      let cnt = 0
+      for (let key in x) {
+        cnt++
+      }
+      for (let key in y) {
+        cnt--
+      }
+      if (cnt !== 0) {
+        return false
+      }
+      for (let key in x) {
+        // 可能两个对象属性数量相同，但各有一个值为undefined的不同属性。
+        // !((key in y) && (deepEqual(x[key], y[key]))
+        if (!(key in y) || !(deepEqual(x[key], y[key]))) {
+          return false
+        }
+      }
+      return true
+    }
+    // 基准条件。
+    return x === y
+  }
+  
 </script>
