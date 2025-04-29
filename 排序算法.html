@@ -32,7 +32,8 @@
     *   可能会爆栈，因为partition操作可能会极其不均衡的将元素分成两部分
     * 
     * 快排的另一个应用：
-    *   找出数组中第n大的元素
+    *   找出数组中第k大的元素
+    *   分区后返回的pIdx等于k时对应的值。
     */
 
   // 生成长度为len的随机整数数组。
@@ -245,6 +246,7 @@
     if (array.length < 2) {
       return array
     }
+    // 当数组长度为2时，为了用slice能正确分组，需要midIdx为1。
     const midIdx = Math.floor(array.length / 2)
     const left = array.slice(0, midIdx)
     const right = array.slice(midIdx)
