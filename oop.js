@@ -18,7 +18,7 @@
     }
   
     append(val) {
-      const node = new ListNode(val)
+      const node = { val: val, next: null }
     
       if (this.head === null) {
         this.head = this.tail = node
@@ -30,7 +30,7 @@
     }
   
     prepend(val) {
-      const node = new ListNode(val)
+      const node = { val: val, next: null }
     
       if (this.head === null) {
         this.head = this.tail = node
