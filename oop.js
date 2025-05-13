@@ -1,3 +1,12 @@
+  class ListNode {
+    val = 0;
+    next = null;
+    constructor(val) {
+      this.val = val
+    }
+  }
+
+
   class LinkedList {
     head = null;
     tail = null;
@@ -12,13 +21,14 @@
     
       while (idx > 0) {
         p = p.next
+        idx--
       }
     
       return p.val
     }
   
     append(val) {
-      const node = { val: val, next: null }
+      const node = new ListNode(val)
     
       if (this.head === null) {
         this.head = this.tail = node
@@ -30,7 +40,7 @@
     }
   
     prepend(val) {
-      const node = { val: val, next: null }
+      const node = new ListNode(val)
     
       if (this.head === null) {
         this.head = this.tail = node

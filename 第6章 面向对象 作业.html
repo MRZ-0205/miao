@@ -16,13 +16,14 @@
       if (idx < 0 || idx >= this.#size) {
         return undefined
       }
-
+    
       let p = this.head
-
+    
       while (idx > 0) {
         p = p.next
+        idx--
       }
-
+    
       return p.val
     }
 
