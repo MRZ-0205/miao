@@ -1,44 +1,48 @@
   class LinkedList {
-    head = null
-    tail = null
-    size = 0
-
+    head = null;
+    tail = null;
+    #size = 0;
+  
     at(idx) {
-      if (idx < 0 || idx >= this.size) {
+      if (idx < 0 || idx >= this.#size) {
         return undefined
       }
-
+    
       let p = this.head
-
+    
       while (idx > 0) {
         p = p.next
       }
-
+    
       return p.val
     }
-    
+  
     append(val) {
-      const node = { val: val, next: null }
-
+      const node = new ListNode(val)
+    
       if (this.head === null) {
         this.head = this.tail = node
       } else {
         this.tail.next = node
         this.tail = node
       }
-      this.size++
+      this.#size++
     }
-
+  
     prepend(val) {
-      const node = { val: val, next: null }
-
+      const node = new ListNode(val)
+    
       if (this.head === null) {
         this.head = this.tail = node
       } else {
         node.next = this.head
         this.head = node
       }
-      this.size++
+      this.#size++
+    }
+  
+    get size() {
+      return this.#size
     }
   }
 

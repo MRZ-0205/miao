@@ -10,10 +10,10 @@
   class LinkedList {
     head = null;
     tail = null;
-    size = 0;
+    #size = 0;
 
     at(idx) {
-      if (idx < 0 || idx >= this.size) {
+      if (idx < 0 || idx >= this.#size) {
         return undefined
       }
 
@@ -35,7 +35,7 @@
         this.tail.next = node
         this.tail = node
       }
-      this.size++
+      this.#size++
     }
 
     prepend(val) {
@@ -47,7 +47,11 @@
         node.next = this.head
         this.head = node
       }
-      this.size++
+      this.#size++
+    }
+
+    get size() {
+      return this.#size
     }
   }
 
