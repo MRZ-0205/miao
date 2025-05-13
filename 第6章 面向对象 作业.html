@@ -10,10 +10,10 @@
   class LinkedList {
     head = null;
     tail = null;
-    #size = 0;
+    size = 0;
 
     at(idx) {
-      if (idx < 0 || idx >= this.#size) {
+      if (idx < 0 || idx >= this.size) {
         return undefined
       }
 
@@ -35,7 +35,7 @@
         this.tail.next = node
         this.tail = node
       }
-      this.#size++
+      this.size++
     }
 
     prepend(val) {
@@ -47,7 +47,7 @@
         node.next = this.head
         this.head = node
       }
-      this.#size++
+      this.size++
     }
   }
 
@@ -310,7 +310,7 @@
   console.log(h.pop()) // 9999
   console.log(h.length) // 9999
 
-  class stack {
+  class Stack {
     #vals; #size;
 
     constructor() {

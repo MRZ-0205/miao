@@ -1,10 +1,10 @@
   class LinkedList {
     head = null
     tail = null
-    #size = 0
+    size = 0
 
     at(idx) {
-      if (idx < 0 || idx >= this.#size) {
+      if (idx < 0 || idx >= this.size) {
         return undefined
       }
 
@@ -26,7 +26,7 @@
         this.tail.next = node
         this.tail = node
       }
-      this.#size++
+      this.size++
     }
 
     prepend(val) {
@@ -38,7 +38,7 @@
         node.next = this.head
         this.head = node
       }
-      this.#size++
+      this.size++
     }
   }
 
@@ -120,8 +120,6 @@
       this.#length = 0
     }
 
-    // 返回第idx位置的值
-    // 正负索引访问
     at(idx) {
       if (0 <= idx && idx < this.#length) {
         return this.#vals[idx]
@@ -132,12 +130,9 @@
       }
     }
 
-    // 自动扩容
-    // 初始容量为 0 时的处理
-    // 极端情况：容量溢出 this.#capacity = Math.min(this.#capacity * 2, 2 ** 32 - 1)
     push(val) {
       if (this.#length === this.#capacity) {
-        this.#capacity *= Math.max(this.#capacity * 2, 1) // 防止 capacity 为 0
+        this.#capacity *= Math.max(this.#capacity * 2, 1)
         const newVals = new Array(this.#capacity)
         for (let i = 0; i < this.#length; i++) {
           newVals[i] = this.#vals[i]
@@ -149,9 +144,6 @@
       return this.#length
     }
 
-    // JS的pop()不主动缩容
-    // 但还是写个主动缩容
-    // 也可以额外提供方法
     pop() {
       if (this.#length === 0) {
         return undefined
@@ -172,12 +164,10 @@
       return val
     }
 
-    // 返回数组元素的数量
     get length() {
       return this.#length
     }
 
-    // 修改length会自动截断（删除）length以外的值
     set length(newLength) {
       if (0 <= newLength && newLength < this.#length) {
         for (let i = newLength; i < this.#length; i++) {
@@ -188,19 +178,7 @@
     }
   }
 
-  var h = new ArrayList()
-
-  for (var i = 0; i < 10000; i++) {
-    h.push(i)
-  }
-
-  console.log(h.at(15)) // 14
-  console.log(h.at(80)) // 79
-  console.log(h.length) // 10000
-  console.log(h.pop()) // 9999
-  console.log(h.length) // 9999
-
-  class stack {
+  class Stack {
     #vals; #size;
 
     constructor() {
