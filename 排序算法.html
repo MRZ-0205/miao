@@ -220,8 +220,7 @@
   // 大于j的位置的元素是那些>=哨兵元素的元素们。
   function partitionHoare(array, left, right) {
     const pIdx = left + Math.floor(Math.random() * (right - left + 1))
-    const p = array[pIdx];
-    [array[pIdx], array[right]] = [array[right], array[pIdx]]
+    const p = array[pIdx]
     let i = left - 1
     let j = right + 1
     while (true) {

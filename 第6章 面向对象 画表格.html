@@ -1,0 +1,354 @@
+<script>
+  // 表格中每一行的最大高度
+  function rowHeights(rows) {
+    return rows.map(row => {
+      return Math.max(...row.map(cell => cell.minHeight()))
+    })
+  }
+  // function rowHeights(rows) {
+  //   return rows.map(function (row) {
+  //     return row.reduce(function (max, cell) {
+  //       return Math.max(max, cell.minHeight());
+  //     }, 0);
+  //   });
+  // }
+
+  // 表格中每一列的最大宽度
+  function colWidths(rows) {
+    return rows[0].map((_, colIdx) => {
+      // 获取当前列的所有单元格
+      return Math.max(...rows.map(row => {
+        return row[colIdx]
+      }).map(cell => cell.minWidth()))
+    })
+  }
+  // function colWidths(rows) {
+  //   return rows[0].map(function (_, i) {
+  //     return rows.reduce(function (max, row) {
+  //       return Math.max(max, row[i].minWidth());
+  //     }, 0);
+  //   });
+  // }
+
+  // 绘制整个表格
+  function drawTable(rows) {
+    var heights = rowHeights(rows);
+    var widths = colWidths(rows);
+    // 绘制一行中的一条线（因为一个单元格可能有多个文本行）
+    function drawLine(blocks, lineNo) {
+      return blocks.map(function (block) {
+        return block[lineNo];
+      }).join(" ");
+    }
+    // 绘制表格的一整行
+    function drawRow(row, rowNum) {
+      // 绘制当前行的所有单元格
+      var blocks = row.map(function (cell, colNum) {
+        return cell.draw(widths[colNum], heights[rowNum]);
+      });
+      // 将单元格的多行文本按行号组合
+      return blocks[0].map(function (_, lineNo) {
+        return drawLine(blocks, lineNo);
+      }).join("\n");
+    }
+    // 绘制所有行并用换行符连接
+    return rows.map(drawRow).join("\n");
+  }
+
+  class TextCell {
+    constructor(text) {
+      // 将文本按换行符分割成数组，每行一个元素
+      this.lines = text.split('\n')
+      // this.minWidth = Math.max(...this.lines.map(line => line.length))
+      // this.minHeight = this.lines.length
+    }
+    minWidth() {
+      return Math.max(...this.lines.map(line => line.length))
+    }
+    minHeight() {
+      return this.lines.length
+    }
+    // 绘制单元格内容
+    draw(width, height) {
+      var result = []
+      for (var i = 0; i < height; i++) {
+        var line = this.lines[i] || ''
+        while(line.length < width) {
+          line += ' '
+        }
+        result.push(line)
+      }
+      return result
+    }
+  }
+
+  /**
+  constructor(text) {
+   this.lines = text.split('\n')
+  }
+  的，直接new UnderlinedCell(String(text))
+  
+  constructor(textCell) {
+    this.textCell = textCell
+  }
+  的， 要new UnderlinedCell(new TextCell(String(text)))
+  */
+  class UnderlinedCell {
+    // 私有类字段，这个属性只能在 UnderlinedCell 类内部访问，外部无法直接读取或修改它
+    // 封装性；避免命名冲突
+    #textCell;
+    constructor(textCell) {
+      this.#textCell = textCell
+    }
+    minWidth() {
+      return this.#textCell.minWidth()
+    }
+    minHeight() {
+      return this.#textCell.minHeight() + 1
+    }
+    draw(width, height) {
+      var ret = this.#textCell.draw(width, height - 1)
+      ret.push('-'.repeat(width))
+      return ret
+    }
+  }
+
+  class HeaderCell {
+    constructor(text) {
+      this.lines = text.split('\n')
+    }
+    minWidth() {
+      return Math.max(...this.lines.map(line => line.length)) + 2
+    }
+    minHeight() {
+      return this.lines.length + 2
+    }
+    draw(width, height) {
+      var border = '+' + '-'.repeat(width - 2) + '+'
+      var result = [border]
+      for (var i = 0; i < height - 2; i++) {
+        var line = this.lines[i] || ''
+        while(line.length < width - 2) {
+          line += ' '
+        }
+        result.push('|' + line + '|')
+      }
+      result.push(border)
+      return result
+    }
+  }
+
+  class BorderCell {
+    #textCell;
+    constructor(textCell) {
+      this.#textCell = textCell
+    }
+    minWidth() {
+      return this.#textCell.minWidth() + 2
+    }
+    minHeight() {
+      return this.#textCell.minHeight() + 2
+    }
+    draw(width, height) {
+      var ret = this.#textCell.draw(width - 2, height - 2)
+      for (var i = 0 ; i < ret.length; i++) {
+        ret[i] = '|' + ret[i] + '|'
+      }
+      var border = '#' + '-'.repeat(width - 2) + '#'
+
+      ret.unshift(border)
+      ret.push(border)
+      return ret
+    }
+  }
+
+  class RightAlignedTextCell {
+    constructor(text) {
+      this.lines = text.split('\n')
+    }
+    minWidth() {
+      return Math.max(...this.lines.map(it => it.length))
+    }
+    minHeight() {
+      return this.lines.length
+    }
+    draw(width, height) {
+      var result = []
+      for (var i = 0; i < height; i++) {
+        var line = this.lines[i] || ''
+        while(line.length < width) {
+          line = ' ' + line
+        }
+        result.push(line)
+      }
+      return result
+    }
+  }
+
+  // 可以判断值是否可以转换为数字，数值就右对齐，字符串就左对齐
+  class SmartAlignedTextCell {
+    constructor(text) {
+      this.lines = text.split('\n')
+      // 检查是否可以转换为数字
+      this.isNumeric = this.lines.map(line => {
+        return !isNaN(parseFloat(line)) && isFinite(line)
+        // 更严格!isNaN(Number(line)) && isFinite(line)
+      });
+    }
+    minWidth() {
+      return Math.max(...this.lines.map(it => it.length))
+    }
+    minHeight() {
+      return this.lines.length
+    }
+    draw(width, height) {
+      const result = []
+      for (let i = 0; i < height; i++) {
+        let line = this.lines[i] || ''
+        if (this.isNumeric[i]) {
+          // 数值类型：右对齐
+          while (line.length < width) {
+            line = ' ' + line
+          }
+        } else {
+          // 字符串类型：左对齐
+          while (line.length < width) {
+            line = line + ' '
+          }
+        }
+        result.push(line)
+      }
+      return result
+    }
+  }
+
+  // class 电源 {
+  //   constructor() {
+  //     this.电线 = new 电线()
+  //     this.散热器 = new 散热器()
+  //   }
+  // }
+  // class 吹风机 {
+  //   constructor() {
+  //     this.电源 = new 电源()
+  //     this.电机 = new 电机()
+  //     this.加热器 = new 加热器()
+  //   }
+  //   start() {
+  //     this.电源.start()
+  //     this.电机.start()
+  //   }
+  //   up() {
+  //     this.加热器.start()
+  //   }
+  //   stop() {
+  //     this.加热器.stop()
+  //     this.电机.stop()
+  //     this.电源.stop()
+  //   }
+  // }
+  var table = [
+    [new UnderlinedCell(new TextCell('zhangshan')), new TextCell('100'), new TextCell('female'), new TextCell('female')],
+    [new HeaderCell('name'), new HeaderCell('score'), new HeaderCell('sex'), new TextCell('fe\nma\nl\ne')],
+    [new BorderCell(new UnderlinedCell(new TextCell('zhangshan'))), new TextCell('100'), new TextCell('female'), new TextCell('female')],
+    [new TextCell('wang'), new TextCell('99'), new TextCell('male'), new TextCell('female')],
+  ]
+
+  var s = drawTable(table)
+
+  console.log(s)
+
+
+  var MOUNTAINS = [
+    {name: "Kilimanjaro", height: 5895, country: "Tanzania"},
+    {name: "Everest", height: 8848, country: "Nepal"},
+    {name: "Mount Fuji", height: 3776, country: "Japan"},
+    {name: "Mont Blanc", country: "Italy/France", height: 4808},
+    {name: "Vaalserberg", height: 323, country: "Netherlands"},
+    {name: "Denali", height: 6168, country: "United States"},
+    {name: "Popocatepetl",  country: "Mexico", height: 5465}
+  ];
+
+  var hills = []
+  var headerNames = Object.keys(MOUNTAINS[0])
+  var header = headerNames.map(it => new UnderlinedCell(new TextCell(it)))
+
+  hills.push(header)
+
+  for (var mountain of MOUNTAINS) {
+    var row = []
+    for (var key of headerNames) {
+      var val = mountain[key]
+      row.push(new SmartAlignedTextCell(String(val)))
+      /**
+      if (typeof val == 'number') {
+        row.push(new RightAlignedTextCell(String(val)))
+      } else {
+        row.push(new TextCell("" + val))
+      }
+      */
+    }
+    hills.push(row)
+  }
+
+  console.log(hills)
+  console.log(drawTable(hills))
+
+  // 实现该函数，让其绘制一个跟console.table(objArray)类似的表格
+  // 返回表格的html代码
+  // 可以通过document.write(htmlCode)将其显示在页面中
+  function consoleTable(objArray) {
+    let result = 'table'
+    // const headerset = new Set()
+    // for (let obj of objArrat) {
+    //   const keys = Object.keys(obj)
+    //   for (let key of keys) {
+    //     headerset.add(key)
+    //   }
+    // }
+    // const headers = new Array()
+    // for (let header of headerset) {
+    //   headers.push(header)
+    // }
+    const headers = Array.from(new Set(objArray.map(Object.keys).flat()))
+    // 没学CSS，下面是cv的
+    
+    // headers.unshift('(index)')
+    result += '<tr><th>(index)</th>'
+    for (var h of headers) {
+      result += '<th>' + h + '</th>'
+    }
+    result += '</tr>'
+
+    for (var i = 0; i < objArray.length; i++) {
+      var obj = objArray[i]
+      result += '<tr><td>' + i + '</td>'
+      for (var h of headers) {
+        if (h in obj) {
+          var val = obj[h]
+          if (val == undefined) {
+            result += '<td class="gray">' + val + '</td>'
+          } else if (typeof val == 'number') {
+            result += '<td class="blue">' + val + '</td>'
+          } else if (typeof val == 'string') {
+            result += '<td class="red">"' + val + '"</td>'
+          } else {
+            result += '<td>' + val + '</td>'
+          }
+        } else {
+          result += '<td></td>'
+        }
+      }
+      result += '</tr>'
+    }
+
+    return result
+  }
+  
+  document.write(consoleTable([   {a:'oweif',b:2,c:undefined}, {b:4,a:4} ,{b:3, c:5}] ) ) 
+</script>
+<style>
+  .red {color: red;}
+  .blue{color: blue;}
+  .gray{color: gray;}
+</style>
