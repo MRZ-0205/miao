@@ -1,0 +1,310 @@
+<script>
+  // 开放寻址法
+  // 线性探测法
+  // 键为字符串
+  class MyHashMap2 {
+    _keys; _vals; #size;
+
+    constructor() {
+      this._keys = new Array(16)
+      this._vals = new Array(16)
+      this.#size = 0
+    }
+
+    #hash(key) {
+      const seed = 130813
+      let hash = 0
+      for (let i = 0; i < key.length; i++) {
+        hash = ((hash * seed >>> 0) + key.charCodeAt(i)) >>> 0
+      }
+      return hash % this._keys.length
+    }
+
+    grow() {
+      const oldKeys = this._keys
+      const oldVals = this._vals
+      this._keys = new Array(oldKeys.length * 2)
+      this._vals = new Array(oldVals.length * 2)
+      this.#size = 0
+      for (let i = 0; i < oldKeys.length; i++) {
+        if (oldKeys[i] !== undefined) {
+          this.set(oldKeys[i], oldVals[i])
+        }
+      }
+    }
+
+    // 线性探测法
+    set(key, val) {
+      const idx = this.#hash(key)
+      // 不想每次循环都判断一次
+      // for (let i = idx, j = 0; j < this._keys.length ; i++, j++) {
+      //   if (i === this._keys.length) {
+      //     i = 0
+      //   }
+      //   if (this._keys[i] === key) {
+      //     this._vals[i] = val
+      //     return this
+      //   } else if (this._keys[i] === undefined) {
+      //     this._keys[i] = key
+      //     this._vals[i] = val
+      //     this.#size++
+      //     if (this.#size / this._keys.length > 0.5) {
+      //       this.grow()
+      //     }
+      //     return this
+      //   }
+      // }
+      for (let i = idx; i < this._keys.length ; i++) {
+        if (this._keys[i] === key) {
+          this._vals[i] = val
+          return this
+        } else if (this._keys[i] === undefined) {
+          this._keys[i] = key
+          this._vals[i] = val
+          this.#size++
+          if (this.#size / this._keys.length > 0.5) {
+            this.grow()
+          }
+          return this
+        }
+      }
+      for (let i = 0; i < idx; i++) {
+        if (this._keys[i] === key) {
+          this._vals[i] = val
+          return this
+        } else if (this._keys[i] === undefined) {
+          this._keys[i] = key
+          this._vals[i] = val
+          this.#size++
+          if (this.#size / this._keys.length > 0.5) {
+            this.grow()
+          }
+          return this
+        }
+      }
+      return this
+    }
+
+    get(key) {
+      const idx = this.#hash(key)
+      // 不想每次循环都判断一次
+      // for (let i = idx, j = 0; j < this._keys.length ; i++, j++) {
+      //   if (i === this._keys.length) {
+      //     i = 0
+      //   }
+      //   // 如果在idx和实际存储位置之间的映射对被删了，就找不到了
+      //   if (this._keys[i] === key) {
+      //     return this._vals[i]
+      //   } else if (this._keys[i] === undefined) {
+      //     return undefined
+      //   }
+      // }
+      for (let i = idx; i < this._keys.length ; i++) {
+        if (this._keys[i] === key) {
+          return this._vals[i]
+        } else if (this._keys[i] === undefined) {
+          return undefined
+        }
+      }
+      for (let i = 0; i < idx; i++) {
+        if (this._keys[i] === key) {
+          return this._vals[i]
+        } else if (this._keys[i] === undefined) {
+          return undefined
+        }
+      }
+    }
+
+    delete(key) {
+
+    }
+
+    clear() {
+
+    }
+
+    get size() {
+      return this.#size
+    }
+  }
+
+  // 开放寻址法
+  // 链式存储法
+  //   默认头插法
+  //   尾插法适用于特殊需求（如按序遍历、一致性哈希等）
+  //   还可用自平衡二叉树
+  class MyHashMap {
+    #capacity; _lists; #size; #growFactor; #shrinkFactor
+    constructor() {
+      this.#capacity = 16
+      this._lists = new Array(this.#capacity).fill(null)
+      this.#size = 0
+      this.#growFactor = 0.75
+      this.#shrinkFactor = 0.125
+    }
+
+    #hash(key) {
+      if (typeof key == 'number') {
+        key = 'N-' + key
+      }
+      if (typeof key == 'string') {
+        key = 'S-' + key
+      }
+      if (typeof key == 'boolean') {
+        key = 'B-' + key
+      }
+      if (typeof key == 'object') {
+        if (key.hasOwnProperty('objectId')) {
+          key = key.objectId
+        } else {
+          //
+          key = key.objectId = Math.random().toString(36).slice(2)
+        }
+      }
+
+      const seed = 130813
+      let hash = 0
+      for (let i = 0; i < key.length; i++) {
+        hash = ((hash * seed >>> 0) + key.charCodeAt(i)) >>> 0
+      }
+      return hash % this.#capacity
+    }
+
+    grow() {
+      this.#capacity *= 2
+      const oldLists = this._lists
+      this._lists = new Array(this.#capacity)
+      this.#size = 0
+      // 因为哈希算法依赖表的长度
+      for (let list of oldLists) {
+        let p = list
+        while (p) {
+          this.set(p.key, p.val)
+          p = p.next
+        }
+      }
+    }
+
+    shrink() {
+      //
+      if (this.#capacity <= 32) {
+        return
+      }
+      this.#capacity /= 2
+      const oldLists = this._lists
+      this._lists = new Array(this.#capacity)
+      this.#size = 0
+      for (let list of oldLists) {
+        let p = list
+        while (p) {
+          this.set(p.key, p.val)
+          p = p.next
+        }
+      }
+    }
+
+    #loadFactor() {
+      return this.#size / this.#capacity
+    }
+
+    // 链式存储法 头插法
+    set(key, val) {
+      const idx = this.#hash(key)
+
+      let p = this._lists[idx]
+      while (p) {
+        if (p.key === key) {
+          p.val = val
+          return this
+        }
+        p = p.next
+      }
+
+      const node = { key: key, val: val, next: null }
+      node.next = this._lists[idx]
+      this._lists[idx] = node
+      this.#size++
+
+      if (this.#loadFactor() > this.#growFactor) {
+        this.grow()
+      }
+
+      return this
+    }
+
+    get(key) {
+      const idx = this.#hash(key)
+
+      let p = this._lists[idx]
+      while (p) {
+        if (p.key === key) {
+          return p.val
+        }
+        p = p.next
+      }
+      return undefined
+    }
+
+    has(key) {
+      const idx = this.#hash(key)
+
+      let p = this._lists[idx]
+      while (p) {
+        if (p.key === key) {
+          return true
+        }
+        p = p.next
+      }
+      return false
+    }
+
+    delete(key) {
+      const idx = this.#hash(key)
+
+      let p = this._lists[idx]
+      if (p === null) {
+        return false
+      }
+      if (p.key === key) {
+        this._lists[idx] = p.next
+        this.#size--
+
+        if (this.#loadFactor() < this.#shrinkFactor) {
+          this.shrink()
+        }
+
+        return true
+      }
+      while (p.next) {
+        if (p.next.key === key) {
+          p.next = p.next.next
+          this.#size--
+
+          if (this.#loadFactor() < this.#shrinkFactor) {
+            this.shrink()
+          }
+
+          return true
+        }
+        p = p.next
+      }
+      return false
+    }
+
+    // 不按照插入顺序，根本没记录插入顺序
+    forEach(action) {
+      for (let list of this._lists) {
+        let p = list
+        while (p) {
+          action(p.val, p.key)
+          p = p.next
+        }
+      }
+    }
+
+    get size() {
+      return this.#size
+    }
+  }
+
+</script>
