@@ -1,0 +1,345 @@
+<script>
+  /**
+   * 堆：用来维护动态集合的最值（不能同时维护最大值和最小值）。
+   * 又名优先队列（即最值是优先的）
+   * Heap和Priority Queue
+   * 
+   * heap有两个意思：
+   * 堆、优先队列。
+   * 堆内存（与栈内存对应）
+   * 
+   * 堆是一个完全二叉树，且这个二叉树中每个结点都比其两个子结点要大（或者小）
+   * 
+   * 一个大顶堆的最大值在堆顶（即完全二叉树的根结点）
+   * 但是堆只保证最值元素的序，所以对这个颗进行先序，中序，后序，或者按层遍历，都不会得到有序结果
+   * 
+   * 由于堆是完全二叉树，所以它应该如何存储？？？？
+   * 用数组，而且是简单形式的数组，即每个结点存在哪里在是确定的。
+   * 因为完全二叉树的前面没有任何空位置，存成数组形式不会浪费任何空间
+   * 
+   * 堆支持两种操作：
+   * 增加一个元素，增加到最后，一层层往上交换
+   * 删除堆顶元素，记录最值，最后的移到最前，一层层向下交换，返回最值
+   * 
+   * 以下为最大堆
+   */
+
+  // 用于数组
+  class PriorityQueue {
+    // constructor(predicate = it => it) {
+    // constructor(compare) {
+    constructor(array = []) {
+      this._vals = array
+      // this.predicate = predicate
+      // this.compare = compare
+      this.heapify()
+    }
+
+    _swap(i, j) {
+      var t = this._vals[i]
+      this._vals[i] = this._vals[j]
+      this._vals[j] = t
+    }
+
+    heapify() {
+      for (let i = (this._vals.length >> 1) - 1; i > -1; i--) {
+        this.heapDown(i)
+      }
+    }
+
+    // 往堆中增加一个值，并维护堆的性质
+    // heapUp
+    push(val) {
+      this._vals.push(val)
+
+      var idx = this._vals.length - 1
+
+      while (idx > 0) {
+        var pIdx = (idx - 1) >> 1
+
+        // if (this.predicate(this._vals[idx]) > this.predicate(this._vals[pIdx])) {
+        // if (this.compare(this._vals[idx], this._vals[pIdx]) > 0) {
+        if (this._vals[idx] > this._vals[pIdx]) {
+          this._swap(idx, pIdx)
+          idx = pIdx
+        } else {
+          break
+        }
+      }
+
+      return this
+    }
+
+    // 删除堆顶元素（即最值）并维护堆的性质
+    // heapDown
+    pop() {
+      if (this._vals.length == 0) {
+        return undefined
+      }
+      if (this._vals.length == 1) {
+        return this._vals.pop()
+      }
+      var result = this._vals[0]
+      this._vals[0] = this._vals.pop()
+
+      this.heapDown(0)
+
+      return result
+    }
+
+    heapDown(idx) {
+      var maxIdx = idx
+
+      // while (i < (this._vals.length >> 1)) {
+      // 少比较一层
+      while (true) {
+        var leftIdx = maxIdx * 2 + 1
+        // if (leftIdx < this._vals.length && this.predicate(this._vals[leftIdx]) > this.predicate(this._vals[maxIdx])) {
+        // if (leftIdx < this._vals.length && this.compare(this._vals[leftIdx], this._vals[maxIdx]) > 0) {
+        if (leftIdx < this._vals.length && this._vals[leftIdx] > this._vals[maxIdx]) {
+          maxIdx = leftIdx
+        }
+      
+        var rightIdx = leftIdx + 1
+        // if (rightIdx < this._vals.length && this.predicate(this._vals[rightIdx]) > this.predicate(this._vals[maxIdx])) {
+        // if (rightIdx < this._vals.length && this.compare(this._vals[rightIdx], this._vals[maxIdx]) > 0) {
+        if (rightIdx < this._vals.length && this._vals[rightIdx] > this._vals[maxIdx]) {
+          maxIdx = rightIdx
+        }
+      
+        if (maxIdx !== idx) {
+          this._swap(maxIdx, idx)
+          idx = maxIdx
+        } else {
+          break
+        }
+      }
+    }
+
+    // 查看堆顶元素的值但并不删除它（不改变堆的状态）
+    peek() {
+      return this._vals[0]
+    }
+    get size() {
+      return this._vals.length
+    }
+  }
+  
+  // 用于对象
+  class PriorityQueue2 {
+    constructor(predicate = it => it) {
+      this._vals = []
+      this.predicate = predicate
+    }
+
+    _swap(i, j) {
+      var t = this._vals[i]
+      this._vals[i] = this._vals[j]
+      this._vals[j] = t
+    }
+
+    // 往堆中增加一个值，并维护堆的性质
+    push(val) {
+      this._vals.push(val)
+
+      var idx = this._vals.length - 1
+
+      while (idx > 0) {
+        var pIdx = (idx - 1) >> 1
+        if (this.predicate(this._vals[idx]) > this.predicate(this._vals[pIdx])) {
+          this._swap(idx, pIdx)
+          idx = pIdx
+        } else {
+          break
+        }
+      }
+
+      return this
+    }
+
+    // 删除堆顶元素（即最值）并维护堆的性质
+    pop() {
+      if (this._vals.length == 0) {
+        return undefined
+      }
+      if (this._vals.length == 1) {
+        return this._vals.pop()
+      }
+      var result = this._vals[0]
+      this._vals[0] = this._vals.pop()
+
+      var i = 0
+      var maxIdx = i
+
+      while (true) {
+        var leftIdx = maxIdx * 2 + 1
+        if (leftIdx < this._vals.length && this.predicate(this._vals[leftIdx]) > this.predicate(this._vals[maxIdx])) {
+          maxIdx = leftIdx
+        }
+
+        var rightIdx = leftIdx + 1
+        if (rightIdx < this._vals.length && this.predicate(this._vals[rightIdx]) > this.predicate(this._vals[maxIdx])) {
+          maxIdx = rightIdx
+        }
+
+        if (maxIdx !== i) {
+          this._swap(maxIdx, i)
+          i = maxIdx
+        } else {
+          break
+        }
+      }
+
+      return result
+    }
+
+    // 查看堆顶元素的值但并不删除它（不改变堆的状态）
+    peek() {
+      return this._vals[0]
+    }
+    get size() {
+      return this._vals.length
+    }
+  }
+  
+  // 用于对象，换成compare
+  class PriorityQueue3 {
+    constructor(compare) {
+      this._vals = []
+      this.compare = compare
+    }
+    _swap(i, j) {
+      var t = this._vals[i]
+      this._vals[i] = this._vals[j]
+      this._vals[j] = t
+    }
+
+    // 往堆中增加一个值，并维护堆的性质
+    push(val) {
+      this._vals.push(val)
+
+      var idx = this._vals.length - 1
+
+      while (idx > 0) {
+        var pIdx = (idx - 1) >> 1
+        if (this.compare(this._vals[idx], this._vals[pIdx]) > 0) {
+          this._swap(idx, pIdx)
+          idx = pIdx
+        } else {
+          break
+        }
+      }
+
+      return this
+    }
+
+    // 删除堆顶元素（即最值）并维护堆的性质
+    pop() {
+      if (this._vals.length == 0) {
+        return undefined
+      }
+      if (this._vals.length == 1) {
+        return this._vals.pop()
+      }
+      var result = this._vals[0]
+      this._vals[0] = this._vals.pop()
+
+      var i = 0
+      var maxIdx = i
+
+      while (true) {
+        var leftIdx = maxIdx * 2 + 1
+        if (leftIdx < this._vals.length && this.compare(this._vals[leftIdx], this._vals[maxIdx]) > 0) {
+          maxIdx = leftIdx
+        }
+
+        var rightIdx = leftIdx + 1
+        if (rightIdx < this._vals.length && this.compare(this._vals[rightIdx], this._vals[maxIdx]) > 0) {
+          maxIdx = rightIdx
+        }
+
+        if (maxIdx !== i) {
+          this._swap(maxIdx, i)
+          i = maxIdx
+        } else {
+          break
+        }
+      }
+
+      return result
+    }
+
+    // 查看堆顶元素的值但并不删除它（不改变堆的状态）
+    peek() {
+      return this._vals[0]
+    }
+    get size() {
+      return this._vals.length
+    }
+  }
+
+  function heapSort(array) {
+    var pq = new PriorityQueue()
+    for (var item of array) {
+      pq.push(item)
+    }
+
+    for (var i = array.length - 1; i >= 0; i--) 
+    array[i] = pq.pop()
+    
+    return array
+  }
+
+  // 堆排序
+  // 最差情况下时间复杂度:O(n*log(n))
+  // 堆排序不会退化
+  // 空间复杂度:O(1)
+  // 排序的稳定性: 不稳定的
+  function heapSortInPlace(array) {
+    heapify(array)
+    for (var i = array.length - 1; i > 0; i--) {
+      swap(array, 0, i)
+      heapDown(array, 0, i)
+    }
+    return array
+  }
+
+  function swap(array, i, j) {
+    var t = array[i]
+    array[i] = array[j]
+    array[j] = t
+  }
+
+  // 将数组原地堆化：倒着向下调整
+  function heapify(array) {
+    // 从有子树的节点开始
+    for (var i = (array.length - 2) >> 1; i >= 0; i--) {
+      heapDown(array, i)
+    }
+    return array
+  }
+  
+  // l表示小于l位置的元素才是堆里的元素，大于等于l位置的数据本函数不用考虑
+  function heapDown(array, i, l = array.length) {
+    var maxIdx = i
+
+    while (true) {
+      var leftIdx = maxIdx * 2 + 1
+      if (leftIdx < l && array[leftIdx] > array[maxIdx]) {
+        maxIdx = leftIdx
+      }
+
+      var rightIdx = leftIdx + 1
+      if (rightIdx < l && array[rightIdx] > array[maxIdx]) {
+        maxIdx = rightIdx
+      }
+
+      if (maxIdx !== i) {
+        swap(array, maxIdx, i)
+        i = maxIdx
+      } else {
+        break
+      }
+    }    
+  }
+</script>

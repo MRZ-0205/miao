@@ -11,6 +11,7 @@
    *   原地版：不稳定
    *   使用额外数组版：稳定
    * 归并排序：稳定
+   * 堆排序：不稳定
    * 
    * 排序稳定性的应用：
    *   对成绩单进行排序：
@@ -34,7 +35,10 @@
     * 快排的另一个应用：
     *   找出数组中第k大的元素
     *   分区后返回的pIdx等于k时对应的值。
+    * 
     */
+
+  // isSorted(sortArray(randomArray(10000)))
 
   // 生成长度为len的随机整数数组。
   // 数都小于len。
@@ -64,7 +68,6 @@
     let temp = array[i] // [array[i] = array[j]] = [array[j] = array[i]]
     array[i] = array[j]
     array[j] = temp
-    return array
   }
 
   // 交换次数多，重复交换。
@@ -219,6 +222,28 @@
   // 小于i的位置的元素是那些<=哨兵元素的元素们。
   // 大于j的位置的元素是那些>=哨兵元素的元素们。
   function partitionHoare(array, left, right) {
+    /**
+     * 三数取中
+     * let mid = Math.floor((right - left) / 2) + left
+     * let pIdx
+     * if (array[left] < array[mid]) {
+     *     if (array[mid] < array[right]) {
+     *         pIdx = mid
+     *     } else if(array[left] > array[right]) {
+     *         pIdx = left
+     *     } else {
+     *         pIdx = right
+     *     }
+     * } else {
+     *     if (array[mid] > array[right]) {
+     *         pIdx = mid
+     *     } else if (array[left] < array[right]) {
+     *         pIdx = left
+     *     } else {
+     *         pIdx = right
+     *     }
+     * }
+     */
     const pIdx = left + Math.floor(Math.random() * (right - left + 1))
     const p = array[pIdx]
     let i = left - 1
@@ -270,4 +295,85 @@
     return array
   }
 
+  // 二叉搜索树中序遍历
+  var sortArray = function(nums) {
+    let root = null
+    for (let i = 0; i < nums.length; i++) {
+        root = insertIntoBST(root, nums[i])
+    }
+    let i = 0
+    inOrderTraverse(root, val => {
+        nums[i++] = val
+    })
+    return nums
+};
+
+function insertIntoBST(root, val) {
+    if (!root) {
+        return {
+            val: val,
+            left:null,
+            right:null,
+        }
+    }
+    if (val < root.val) {
+        root.left = insertIntoBST(root.left, val)
+    } else {
+        root.right = insertIntoBST(root.right, val)
+    }
+    return root
+}
+
+function inOrderTraverse(root, f) {
+    if (!root) {
+        return
+    }
+    inOrderTraverse(root.left, f)
+    f(root.val)
+    inOrderTraverse(root.right, f)
+}
+
+  // 堆排序
+  // 最差情况下时间复杂度:O(n*log(n))
+  // 堆排序不会退化
+  // 空间复杂度:O(1)
+  // 排序的稳定性: 不稳定的
+  function heapSortInPlace(array) {
+    heapify(array)
+    for (let i = array.length - 1; i > 0; i--) {
+      [array[0], array[i]] = [array[i], array[0]]
+      heapDown(array, 0, i)
+    }
+    return array
+  }
+
+  // 将数组原地堆化：倒着向下调整
+  function heapify(array) {
+    // 从有子树的节点开始
+    for (let i = (array.length >> 1) - 1; i > -1; i--) {
+      heapDown(array, i)
+    }
+    return array
+  }
+  
+  // l表示小于l位置的元素才是堆里的元素，大于等于l位置的数据本函数不用考虑
+  function heapDown(array, i, l = array.length) {
+    let maxIdx = idx
+    while (true) {
+      const leftIdx = idx * 2 + 1
+      if (leftIdx < len && array[leftIdx] > array[maxIdx]) {
+        maxIdx = leftIdx
+      }
+      const rightIdx = leftIdx + 1
+      if (rightIdx < len && array[rightIdx] > array[maxIdx]) {
+        maxIdx = rightIdx
+      }        
+      if (maxIdx !== idx) {
+        [array[idx], array[maxIdx]] = [array[maxIdx], array[idx]]
+        idx = maxIdx
+      } else {
+        break
+      }
+    }
+  }
 </script>
