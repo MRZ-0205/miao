@@ -1,0 +1,72 @@
+<script type = 'xxx' id = 'Retry'>
+  // function MultiplicatorUnitFailure(message = 'MultiplicatorUnitFailure') {
+  //   this.message = message
+  //   this.stack = (new Error()).stack
+  // }
+  // MultiplicatorUnitFailure.prototype = Object.creat(Error.prototype)
+  // MultiplicatorUnitFailure.prototype.name = 'MultiplicatorUnitFailure'
+  // MultiplicatorUnitFailure.prototype.constructor = MultiplicatorUnitFailure
+
+  class MultiplicatorUnitFailure extends Error {
+    constructor(message = 'MultiplicatorUnitFailure') {
+      super(message)
+      this.name = 'MultiplicatorUnitFailure'
+    }
+  }
+
+  function primitiveMultiply(a, b) {
+    if (Math.random() < 0.5) {
+      return a * b
+    } else {
+      throw new MultiplicatorUnitFailure()
+    }
+  }
+
+  // function reliableMultiply(a, b) {
+  //   try {
+  //     return primitiveMultiply(a, b)
+  //   } catch (error) {
+  //     if (error instanceof MultiplicatorUnitFailure) {
+  //       return reliableMultiply(a, b)
+  //     } else {
+  //       throw error
+  //     }
+  //   }
+  // }
+
+  function reliableMultiply(a, b) {
+    for(;;) {
+      try {
+        return primitiveMultiply(a, b)
+      } catch (error) {
+        if (error instanceof MultiplicatorUnitFailure) {
+          continue
+        } else {
+          throw error
+        }
+      }
+    }   
+  }
+</script>
+
+<script type = '' id = 'The locked box'>
+  var box = {
+    locked: true,
+    unlock: function () {this.locked = false},
+    lock: function () {this.locked = true},
+    _content: [],
+    get content() {
+      if (this.locked) throw new Error('Locked !');
+      return this._content
+    }
+  };
+
+  function withBoxUnlocked(f) {
+    box.unlock()
+    try {
+      return f()
+    } finally {
+      box.lock()
+    }
+  }
+</script>
