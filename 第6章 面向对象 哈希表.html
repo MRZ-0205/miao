@@ -36,7 +36,7 @@
     // 线性探测法
     set(key, val) {
       const idx = this.#hash(key)
-      // 不想每次循环都判断一次
+      // 每次循环都判断一次i === this._keys.length
       // for (let i = idx, j = 0; j < this._keys.length ; i++, j++) {
       //   if (i === this._keys.length) {
       //     i = 0
@@ -87,7 +87,7 @@
 
     get(key) {
       const idx = this.#hash(key)
-      // 不想每次循环都判断一次
+      // 每次循环都判断一次i === this._keys.length
       // for (let i = idx, j = 0; j < this._keys.length ; i++, j++) {
       //   if (i === this._keys.length) {
       //     i = 0
@@ -170,6 +170,7 @@
       return hash % this.#capacity
     }
 
+    // 把扩容分成多次进行，每次调set、get等方法时，挪几个链表
     grow() {
       this.#capacity *= 2
       const oldLists = this._lists

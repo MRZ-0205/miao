@@ -42,11 +42,11 @@
     }
     // 绘制表格的一整行
     function drawRow(row, rowNum) {
-      // 绘制当前行的所有单元格
+      // 绘制当前行的所有单元格，同高不同宽。二维数组，外部数组的元素是等长的数组，内部数组的元素是不等长的字符串。
       var blocks = row.map(function (cell, colNum) {
         return cell.draw(widths[colNum], heights[rowNum]);
       });
-      // 将单元格的多行文本按行号组合
+      // 将单元格的多行文本按行号组合，lineNo是这行单元格的高度/行数，等于这行的heights[rowNum]
       return blocks[0].map(function (_, lineNo) {
         return drawLine(blocks, lineNo);
       }).join("\n");
@@ -68,7 +68,7 @@
     minHeight() {
       return this.lines.length
     }
-    // 绘制单元格内容
+    // 绘制单元格内容，由字符串组成的数组，每个字符串代表一行
     draw(width, height) {
       var result = []
       for (var i = 0; i < height; i++) {
